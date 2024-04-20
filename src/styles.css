@@ -1,0 +1,96 @@
+.filter-wrapper {
+  display: flex;
+}
+
+.filter-wrapper > label {
+  background-color: #d9d9d9;
+  padding: 10px;
+  border-radius: 5px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.filter-container {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  border: 1px solid;
+  border-radius: 5px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 5px;
+}
+
+.filter-container > div {
+  display: flex;
+  margin: 2px 0px;
+  margin-left: 5px;
+}
+
+.filter-close {
+  border: none;
+  border-radius: 5px;
+  margin: 2px 0px;
+  margin-right: 10px;
+  color: #939393;
+}
+
+.filter input {
+  border: none;
+  border-left: 1px solid black;
+  width: 100%;
+}
+
+.filter,
+.filter .autocomplete {
+  flex: 1;
+}
+
+.filter {
+  padding: 5px 0px;
+}
+
+.filter-active {
+  background-color: #b7f2f9;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+.filter-invalid {
+  background-color: #ee9292;
+}
+
+.filter-active input {
+  width: 120px;
+}
+.filter-active .autocomplete:first-of-type > input {
+  width: 150px;
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.options-container {
+  position: absolute;
+  padding: 0px;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  max-width: 150px;
+  z-index: 9;
+  background-color: white;
+}
+
+.options-container .option {
+  width: 100%;
+  border: none;
+  padding: 5px 10px;
+  text-align: left;
+  display: inline-block;
+  margin: 2px 0px;
+}
+
+.options-container:not(:focus-within) > li:first-child button {
+  outline: 2px solid rgb(8, 106, 211);
+}
