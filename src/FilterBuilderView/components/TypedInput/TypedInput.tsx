@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useImperativeHandle } from "react";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue.ts";
 import { ColumnType } from "../../types.ts";
 
@@ -85,27 +85,69 @@ interface DateInputProps {
   inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-const isDate = (value: unknown): value is Date => {
-  return value !== undefined && value instanceof Date;
+const isValidDate = (value: unknown): value is Date => {
+  return (
+    value !== undefined && value instanceof Date && !isNaN(value.getTime())
+  );
+};
+
+const dateToString = (value: Date | undefined): string => {
+  if (!isValidDate(value)) {
+    return "";
+  }
+  return value?.toISOString().substring(0, 10) || "";
 };
 
 const DateInput = ({ defaultValue, onChange, inputRef }: DateInputProps) => {
   const [value, setValue] = useState(defaultValue);
   const debouncedValue = useDebouncedValue(value);
+  const innerInputRef: React.RefObject<HTMLInputElement> = useRef(null);
 
   useEffect(() => {
-    isDate(debouncedValue) && onChange(debouncedValue);
+    debouncedValue && onChange(debouncedValue);
   }, [debouncedValue]);
 
-  const onChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (event) =>
-    setValue(new Date(event.target.value));
+  const onChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    const newDate = new Date(event.target.value);
+    if (isValidDate(newDate)) {
+      setValue(newDate);
+    }
+  };
+
+  useEffect(() => {
+    // If user clicks or focuses away from the input reset the text
+    const func = () => {
+      if (innerInputRef.current) {
+        innerInputRef.current.value = dateToString(value);
+      }
+    };
+    innerInputRef.current?.addEventListener("focusout", func);
+    return () => {
+      innerInputRef.current?.removeEventListener("focusout", func);
+    };
+  }, [inputRef, value]);
+
+  // ImperativeHandle lets parent component set focus on input element, while allowing this component to also control it when needed.
+  useImperativeHandle(
+    inputRef,
+    () => {
+      return {
+        focus() {
+          innerInputRef.current?.focus();
+        },
+      } as HTMLInputElement;
+    },
+    []
+  );
 
   return (
     <input
       type="date"
-      ref={inputRef}
+      ref={innerInputRef}
       onChange={onChangeHandler}
-      defaultValue={isDate(defaultValue) ? defaultValue.toISOString() : ""}
+      defaultValue={dateToString(defaultValue)}
     />
   );
 };
